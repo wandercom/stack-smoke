@@ -46,3 +46,5 @@ make continuous  # repeat both checks; interval controlled by SMOKE_INTERVAL_SEC
 
 `make continuous` is intentionally simple: run it under a process supervisor,
 cron, or CI schedule until the harness has its own scheduler.
+
+Local prerequisite checks use `~/WanderRepos/repos`, falling back per path to `~/Code` for retained personal projects. Set `STACK_PERSONAL_ROOT` to change that fallback. An explicit `STACK_ROOT` checks only that root.
