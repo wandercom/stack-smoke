@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="${STACK_ROOT:-${HOME}/WanderRepos/repos}"
-personal_root="${STACK_PERSONAL_ROOT:-${HOME}/Code}"
+# STACK_ROOT: directory holding the stack checkouts side by side. Defaults to
+# the parent of this stack-smoke checkout (sibling layout).
+# STACK_PERSONAL_ROOT: optional second root, consulted per path when a
+# component is missing under STACK_ROOT. Unset means no fallback.
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+root="${STACK_ROOT:-$(cd "$script_dir/../.." && pwd)}"
+personal_root="${STACK_PERSONAL_ROOT:-}"
 missing=0
 
 require_path() {
   local relative="$1"
   local path="$root/$relative"
-  # An explicit STACK_ROOT remains strict. The default layout supports tools
-  # retained personally alongside the repositories migrated to Wander.
-  if [[ -z "${STACK_ROOT:-}" && ! -e "$path" && -e "$personal_root/$relative" ]]; then
+  # Fall back to STACK_PERSONAL_ROOT only when it is explicitly configured.
+  if [[ -n "$personal_root" && ! -e "$path" && -e "$personal_root/$relative" ]]; then
     path="$personal_root/$relative"
   fi
   if [[ ! -e "$path" ]]; then
